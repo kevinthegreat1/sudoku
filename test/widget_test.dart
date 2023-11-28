@@ -11,20 +11,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sudoku/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Sudoku test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const SudokuApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that we have 9x9 tiles and 81 empty text fields.
+    expect(find.byType(GridView), findsNWidgets(10));
+    expect(find.text(''), findsNWidgets(81));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Enter '1' into the first text field.
+    await tester.enterText(find.byType(TextField).first, '1');
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
+    // Verify that the first text field contains '1' and the rest are empty.
     expect(find.text('1'), findsOneWidget);
+    expect(find.text(''), findsNWidgets(80));
   });
 }
