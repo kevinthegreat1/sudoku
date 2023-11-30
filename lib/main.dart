@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'solve.dart';
+
 void main() {
   runApp(const SudokuApp());
 }
@@ -28,25 +30,85 @@ class _SudokuState extends State<Sudoku> {
   final List<TextEditingController> _board = List.generate(81, (index) {
     return TextEditingController();
   });
-
-  void _updateBoard(int index, int value) {
-    setState(() {
-      _board[index].text = value.toString();
-    });
-  }
+  List<String>? _savedBoard;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black,
-        body: GridView.count(
-          crossAxisCount: 3,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-          children: List.generate(9, (index) {
-            return SudokuTile(index: index, controllers: _board);
-          }),
-        ));
+        body: Column(
+      children: [
+        Flexible(
+          child: Container(
+            height: MediaQuery.of(context).size.width,
+            color: Colors.black,
+            child: GridView.count(
+              crossAxisCount: 3,
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 4,
+              children: List.generate(9, (index) {
+                return SudokuTile(index: index, controllers: _board);
+              }),
+            ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+                child: const Text('Solve 1'),
+                onPressed: () {
+                  solve1(_board);
+                }),
+            ElevatedButton(
+                child: const Text('Solve 2'),
+                onPressed: () {
+                  solve2(_board);
+                }),
+            ElevatedButton(
+                child: const Text('Solve 3'),
+                onPressed: () {
+                  solve3(_board);
+                }),
+            ElevatedButton(
+                child: const Text('Solve 4'),
+                onPressed: () {
+                  solve4(_board);
+                }),
+            ElevatedButton(
+                child: const Text('Solve 5'),
+                onPressed: () {
+                  solve5(_board);
+                }),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+                child: const Text('Save'),
+                onPressed: () {
+                  _savedBoard = _board.map((e) => e.text).toList();
+                }),
+            ElevatedButton(
+                child: const Text('Load'),
+                onPressed: () {
+                  if (_savedBoard != null) {
+                    for (int i = 0; i < _board.length; i++) {
+                      _board[i].text = _savedBoard![i];
+                    }
+                  }
+                }),
+            ElevatedButton(
+                child: const Text('Clear'),
+                onPressed: () {
+                  for (final controller in _board) {
+                    controller.clear();
+                  }
+                }),
+          ],
+        ),
+      ],
+    ));
   }
 }
 
@@ -76,7 +138,10 @@ class SudokuTile extends StatelessWidget {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
-              controller: controllers[this.index * 9 + index],
+              controller: controllers[this.index ~/ 3 * 27 +
+                  this.index % 3 * 3 +
+                  index ~/ 3 * 9 +
+                  index % 3],
             ),
           ),
         );
